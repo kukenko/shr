@@ -18,5 +18,5 @@ TODO: Write usage instructions here
 
 License
 -------
-Released under the MIT License. See the [LICENCE][licence] file for further details.
+Released under the MIT License. See the [LICENSE][license] file for further details.
 [license]: https://github.com/kukenko/shr/LICENSE.md
