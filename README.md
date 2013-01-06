@@ -10,7 +10,7 @@ This is a port of Python's [sh](https://github.com/amoffat/sh).
 
 Installation
 ------------
-TODO: Write installation here
+    gem install shr
 
 Usage
 -----
