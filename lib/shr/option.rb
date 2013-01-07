@@ -23,11 +23,11 @@ module Shr
             @stack.push opt
           end
         when Symbol
-          @stack.push << "-#{opt.length > 1 ? '-' : ''}#{opt}"
+          @stack << "-#{opt.length > 1 ? '-' : ''}#{opt}"
         when Hash
           opt.each do |k, v|
             if v.eql?(true)
-              @stack.push << "-#{k.length > 1 ? '-' : ''}#{k}"
+              @stack << "-#{k.length > 1 ? '-' : ''}#{k}"
             else
               if k.length > 1
                 @stack << "--#{k}=#{v}"
@@ -37,7 +37,7 @@ module Shr
             end
           end
         when Fixnum
-          @stack.push << "-#{opt}"
+          @stack << "-#{opt}"
         end
       end
       @stack
