@@ -5,77 +5,49 @@ module Shr
   describe Option do
     let(:opt) { Option.new }
 
+    SHORT_FORM = ['-o', 'page.html']
+    LONG_FORM  = ['--shell=/bin/sh', '--silent']
+    MIXED_FORM = SHORT_FORM + LONG_FORM
+
     it 'has the following methods' do
       o = opt.methods
       o.should include(:parse)
     end
 
     describe '#parse' do
-      shared_examples 'with short-form options' do
-        it 'parses correctly' do
-          opt.parse(options).should eq(['-o', 'page.html'])
-        end
-      end
-
-      shared_examples 'with long-form options' do
-        it 'parses correctly' do
-          opt.parse(options).should eq(['--shell=/bin/sh', '--silent'])
-        end
-      end
-
-      shared_examples 'with mixed options' do
-        it 'parses correctly' do
-          opt.parse(options).should eq(['-o', 'page.html', '--shell=/bin/sh', '--silent'])
-        end
-      end
-
       describe String do
-        it_behaves_like 'with short-form options' do
-          let(:options) { ['-o', 'page.html'] }
-        end
-
-        it_behaves_like 'with long-form options' do
-          let(:options) { ['--shell', '/bin/sh', '--silent'] }
-        end
-
-        it_behaves_like 'with mixed options' do
-          let(:options) { ['-o', 'page.html', '--shell', '/bin/sh', '--silent'] }
+        it 'remains argument unchanged' do
+          opt.parse(MIXED_FORM).should eq(MIXED_FORM)
         end
       end
 
       describe Symbol do
-        it_behaves_like 'with short-form options' do
-          let(:options) { [:o, 'page.html'] }
+        context 'with a character' do
+          it 'tranlate argument to short-form' do
+            opt.parse([:o]).should eq(['-o'])
+          end
         end
 
-        it_behaves_like 'with long-form options' do
-          let(:options) { [:shell, '/bin/sh', :silent] }
-        end
-
-        it_behaves_like 'with mixed options' do
-          let(:options) { [:o, 'page.html', :shell, '/bin/sh', :silent] }
+        context 'with some characters' do
+          it 'translates argument to long-form' do
+            opt.parse([:silent]).should eq(['--silent'])
+          end
         end
       end
 
       describe Hash do
-        it_behaves_like 'with short-form options' do
-          let(:options) { [{ :o => 'page.html' }] }
-        end
-
-        it_behaves_like 'with long-form options' do
-          let(:options) { [{ :shell => '/bin/sh', :silent => true }] }
-        end
-
-        it_behaves_like 'with mixed options' do
-          let(:options) { [{ :o => 'page.html', :shell => '/bin/sh', :silent => true }] }
-        end
+        it { opt.parse([{ :o => 'page.html' }]).should eq(SHORT_FORM) }
+        it { opt.parse([{ :shell => '/bin/sh', :silent => true }]).should eq(LONG_FORM) }
       end
 
       describe Fixnum do
-        it 'parses short-form options' do
-          options = [1, 2, 3]
-          opt.parse(options).should eq(['-1', '-2', '-3'])
+        it 'translates argument to short-form' do
+          opt.parse([1, 2, 3]).should eq(['-1', '-2', '-3'])
         end
+      end
+
+      describe Array do
+        # xxx
       end
     end
   end

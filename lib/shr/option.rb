@@ -13,15 +13,7 @@ module Shr
       options.each do |opt|
         case opt
         when String
-          unless opt.start_with? '-'
-            if @stack.last && @stack.last.start_with?('--')
-              @stack.push "#{@stack.pop}=#{opt}"
-            else
-              @stack.push opt
-            end
-          else
-            @stack.push opt
-          end
+          @stack.push opt
         when Symbol
           @stack << "-#{opt.length > 1 ? '-' : ''}#{opt}"
         when Hash
