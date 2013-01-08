@@ -13,19 +13,20 @@ module Shr
       options.each do |opt|
         case opt
         when String
-          @stack.push opt
+          @stack << opt
         when Symbol
-          @stack << "-#{opt.length > 1 ? '-' : ''}#{opt}"
+          @stack << translate_from(opt)
         when Hash
           opt.each do |k, v|
             if v.eql?(true)
-              @stack << "-#{k.length > 1 ? '-' : ''}#{k}"
+              @stack << translate_from(k)
             else
               if k.length > 1
-                @stack << "--#{k}=#{v}"
+                @stack << "#{translate_from(k)}=#{v}"
               else
-                @stack << "-#{k.length > 1 ? '-' : ''}#{k}" << v
+                @stack << translate_from(k) << v
               end
+
             end
           end
         when Fixnum
@@ -33,6 +34,13 @@ module Shr
         end
       end
       @stack
+    end
+
+    private
+
+    def translate_from(opt)
+      s = opt.to_s
+      "-#{s.length > 1 ? '-' : ''}#{s}"
     end
   end
 end
