@@ -2,45 +2,43 @@
 
 module Shr
   class Option
-    # xxx
     def initialize
-      @stack = []
+      @options   = []
+      @indicator = '-'
     end
+    attr_accessor :indicator
 
-    # xxx
-    # This method has not support Windows yet.
     def parse(options)
       options.each do |opt|
         case opt
         when String
-          @stack << opt
+          @options << opt
         when Symbol
-          @stack << translate_from(opt)
+          @options << translate_from(opt)
         when Hash
           opt.each do |k, v|
             if v.eql?(true)
-              @stack << translate_from(k)
+              @options << translate_from(k)
             else
               if k.length > 1
-                @stack << "#{translate_from(k)}=#{v}"
+                @options << "#{translate_from(k)}=#{v}"
               else
-                @stack << translate_from(k) << v
+                @options << translate_from(k) << v
               end
-
             end
           end
         when Fixnum
-          @stack << "-#{opt}"
+          @options << "#{@indicator}#{opt}"
         end
       end
-      @stack
+      @options
     end
 
     private
 
     def translate_from(opt)
       s = opt.to_s
-      "-#{s.length > 1 ? '-' : ''}#{s}"
+      "#{@indicator}#{(s.length > 1 ? '-' : '') if @indicator == '-'}#{s}"
     end
   end
 end

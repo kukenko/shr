@@ -26,11 +26,21 @@ module Shr
           it 'tranlate argument to short-form' do
             opt.parse([:o]).should eq(['-o'])
           end
+
+          it 'may be indicated by @indicator' do
+            opt.indicator = '/'
+            opt.parse([:o]).should eq(['/o'])
+          end
         end
 
         context 'with some characters' do
           it 'translates argument to long-form' do
             opt.parse([:silent]).should eq(['--silent'])
+          end
+
+          it 'may be indicated by @indicator' do
+            opt.indicator = '/'
+            opt.parse([:silent]).should eq(['/silent'])
           end
         end
       end
@@ -38,16 +48,26 @@ module Shr
       describe Hash do
         it { opt.parse([{ :o => 'page.html' }]).should eq(SHORT_FORM) }
         it { opt.parse([{ :shell => '/bin/sh', :silent => true }]).should eq(LONG_FORM) }
+
+        context 'with indicator' do
+          it 'may be indicated by @indicator' do
+            opt.indicator = '/'
+            opt.parse([{ :o => 'page.html' }]).should eq(['/o', 'page.html'])
+          end
+        end
       end
 
       describe Fixnum do
         it 'translates argument to short-form' do
           opt.parse([1, 2, 3]).should eq(['-1', '-2', '-3'])
         end
-      end
 
-      describe Array do
-        # xxx
+        context 'with indicator' do
+          it 'may be indicated by @indicator' do
+            opt.indicator = '/'
+            opt.parse([1, 2, 3]).should eq(['/1', '/2', '/3'])
+          end
+        end
       end
     end
   end
