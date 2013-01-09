@@ -10,18 +10,44 @@ module Shr
     end
 
     describe '#exist?' do
-      it 'returns true if any of executables are found' do
-        Which.exist?(:pwd).should be_true
+      shared_examples 'if any of executables are found' do
+        it { Which.exist?(command).should be_true }
       end
 
-      it 'returns false if any of executables are not found' do
-        Which.exist?(:not_found).should be_false
+      shared_examples 'if any of executables are not found' do
+        it { Which.exist?(command).should be_false }
       end
 
-      context 'with argument String' do
-        it 'returns true if any of executables are found' do
-          Which.exist?('pwd').should be_true
+      unless ENV['OS'] == 'Windows_NT'
+        it_behaves_like 'if any of executables are found' do
+          let(:command) { :pwd }
         end
+
+        context 'with String' do
+          it_behaves_like 'if any of executables are found' do
+            let(:command) { 'pwd' }
+          end
+        end
+      else
+        it_behaves_like 'if any of executables are found' do
+          let(:command) { :notepad }
+        end
+
+        context 'with builtin command' do
+          it_behaves_like 'if any of executables are found' do
+            let(:command) { :chdir }
+          end
+        end
+
+        context 'with String' do
+          it_behaves_like 'if any of executables are found' do
+            let(:command) { 'chdir' }
+          end
+        end
+      end
+
+      it_behaves_like 'if any of executables are not found' do
+        let(:command) { :not_found }
       end
     end
   end
