@@ -78,9 +78,17 @@ module Shr
       @command_out && !@command_out.closed?
     end
 
+    # xxx
     def command_line(name, args)
-      options = Option.new.parse(args).join(' ')
-      "#{name} #{options}".strip
+      option = Option.new
+      option.indicator = '/' if OS.windows?
+      options = option.parse(args).join(' ')
+
+      if OS.windows?
+        "cmd /c #{name} #{options}".strip
+      else
+        "#{name} #{options}".strip
+      end
     end
 
     def delay(name, args)

@@ -74,8 +74,8 @@ module Shr
 
     describe '#exitstatus' do
       it "shows an exit status of process" do
-        sh.ruby(:e, "'exit 0'").exitstatus.should eq(0)
-        sh.ruby(:e, "'exit 1'").exitstatus.should eq(1)
+        sh.ruby('-e', "'exit 0'").exitstatus.should eq(0)
+        sh.ruby('-e', "'exit 1'").exitstatus.should eq(1)
       end
     end
 
