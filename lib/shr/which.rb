@@ -19,6 +19,7 @@ module Shr
         cd chdir
         cls
         color
+        copy
         date
         del erace
         dir
@@ -39,6 +40,7 @@ module Shr
         start
         time
         title
+        type
         var
         verify
         vol
