@@ -1,7 +1,7 @@
 #coding: utf-8
 require 'open3'
-require 'shr/option'
 require 'shr/which'
+require 'shr/command'
 
 module Shr
   class Shell
@@ -78,21 +78,8 @@ module Shr
       @command_out && !@command_out.closed?
     end
 
-    # xxx
-    def command_line(name, args)
-      option = Option.new
-      option.indicator = '/' if OS.windows?
-      options = option.parse(args).join(' ')
-
-      if OS.windows?
-        "cmd /c #{name} #{options}".strip
-      else
-        "#{name} #{options}".strip
-      end
-    end
-
     def delay(name, args)
-      @promise << command_line(name, args)
+      @promise << Command.new(name, args).to_s
     end
 
     def force(args={})
@@ -110,6 +97,6 @@ module Shr
       @promise.clear
     end
 
-    private :filled?, :command_line, :delay, :force
+    private :filled?, :delay, :force
   end
 end
