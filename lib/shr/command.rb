@@ -18,7 +18,7 @@ module Shr
     end
 
     def to_s
-      "#{@command} #{@opts}".strip
+      "#{command} #{@opts}".strip
     end
   end
 end
