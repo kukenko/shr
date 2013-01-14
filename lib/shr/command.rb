@@ -6,10 +6,8 @@ module Shr
   class Command
     def initialize(command, options)
       @command = command
-      # xxx
-      option = Option.new
-      option.indicator = '/' if OS.windows?
-      @opts = option.parse(options).join(' ')
+      Option.indicator = '/' if OS.windows?
+      @options = Option.translate(options).join(' ')
     end
     attr_reader :command
 
@@ -18,7 +16,7 @@ module Shr
     end
 
     def to_s
-      "#{command} #{@opts}".strip
+      [command, @options].join(' ')
     end
   end
 end

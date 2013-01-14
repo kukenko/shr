@@ -22,6 +22,7 @@ module Shr
 
     unless OS.windows?
       before(:all) do
+        Option.indicator = '-'
         @tmpdir = Dir.mktmpdir
         ['perl.pl', 'python.py', 'ruby.rb'].each do |file|
           FileUtils.touch File.join(@tmpdir, file)
