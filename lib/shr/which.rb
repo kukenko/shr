@@ -47,40 +47,41 @@ module Shr
       }
     end
 
-    def self.exist?(program)
-      programs = add_extensions(program)
-
-      entries = paths.product(programs).map { |list| list.join '/' }
-      result = entries.find do |exe|
-        File.executable?(exe) && !File.directory?(exe)
-      end
-
-      if OS.windows?
-        result = program.to_s if @@builtins.include? program.to_s
-      end
-
-      result
-    end
     class << self
+      def exist?(program)
+        programs = add_extensions(program)
+
+        entries = paths.product(programs).map { |list| list.join '/' }
+        result = entries.find do |exe|
+          File.executable?(exe) && !File.directory?(exe)
+        end
+
+        if OS.windows?
+          result = program.to_s if @@builtins.include? program.to_s
+        end
+
+        result
+      end
+
       alias :exists? :exist?
-    end
 
-    def self.add_extensions(program)
-      if OS.windows?
-        # add .bat, .exe, etc.
-        extensions = ENV['PATHEXT'].split(';')
-        [program].product(extensions).map(&:join)
-      else
-        [program]
+      def add_extensions(program)
+        if OS.windows?
+          # add .bat, .exe, etc.
+          extensions = ENV['PATHEXT'].split(';')
+          [program].product(extensions).map(&:join)
+        else
+          [program]
+        end
       end
-    end
 
-    def self.paths
-      @@path.split(File::PATH_SEPARATOR).map! do |path|
-        OS.windows? ? path.gsub('\\', '/') : path
+      def paths
+        @@path.split(File::PATH_SEPARATOR).map! do |path|
+          OS.windows? ? path.gsub('\\', '/') : path
+        end
       end
-    end
 
-    private_class_method :add_extensions, :paths
+      private :add_extensions, :paths
+    end
   end
 end
