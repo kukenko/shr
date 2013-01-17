@@ -1,6 +1,5 @@
 #coding: utf-8
 require 'open3'
-require 'shr/which'
 require 'shr/command'
 
 module Shr
@@ -13,12 +12,12 @@ module Shr
     end
 
     def method_missing(name, *args)
-      command = name.to_s.chomp('!')
-      unless Which.exist?(command)
+      command = Command.new(name, args)
+      unless command.exist?
         super
       else
-        delay(command, args)
-        release { force } if name.to_s.end_with?('!') || @release
+        delay command
+        release { force } if command.release? || @release
         self
       end
     end
@@ -78,8 +77,8 @@ module Shr
       @command_out && !@command_out.closed?
     end
 
-    def delay(name, args)
-      @promise << Command.new(name, args).to_s
+    def delay(command)
+      @promise << command.to_s
     end
 
     def force(args={})

@@ -5,7 +5,7 @@ require 'os'
 # whichr - https://github.com/rdp/whichr
 
 module Shr
-  class Which
+  module Which
     @@path = ENV['PATH']
     if OS.windows?
       cwd = File::PATH_SEPARATOR + '.'
