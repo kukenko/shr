@@ -56,14 +56,15 @@ module Shr
           File.executable?(exe) && !File.directory?(exe)
         end
 
-        if OS.windows?
-          result = program.to_s if @@builtins.include? program.to_s
-        end
-
+        result = program.to_s if builtins?(program.to_s)
         result
       end
 
       alias :exists? :exist?
+
+      def builtins?(program)
+        @@builtins.include? program.to_s if OS.windows?
+      end
 
       def add_extensions(program)
         if OS.windows?

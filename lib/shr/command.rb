@@ -1,5 +1,4 @@
 #command utf-8
-require 'os'
 require 'shr/option'
 require 'shr/which'
 
@@ -15,7 +14,7 @@ module Shr
 
     def command
       command = release? ? @command.chomp('!') : @command
-      OS.windows? ? "cmd /c #{command}" : command
+      Which::builtins?(command) ? "cmd /c #{command}" : command
     end
 
     def to_s
@@ -23,8 +22,7 @@ module Shr
     end
 
     def exist?
-      command = @command.chomp('!')
-      Which::exist? command
+      Which::exist? @command.chomp('!')
     end
 
     def release?
