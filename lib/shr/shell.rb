@@ -73,6 +73,8 @@ module Shr
     alias_method :<, :redirect_from
     alias_method :>, :redirect_to
 
+    private
+
     def filled?
       @command_out && !@command_out.closed?
     end
@@ -95,7 +97,5 @@ module Shr
 
       @promise.clear
     end
-
-    private :filled?, :delay, :force
   end
 end
