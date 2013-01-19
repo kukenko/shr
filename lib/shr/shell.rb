@@ -27,11 +27,15 @@ module Shr
       @command_out.read if filled?
     end
 
-    # xxx
     def inspect
-      puts "#<Shr::Shell - #{@promise.join(' | ')}>"
+      command_line = @promise.join(' | ').strip
       capture { force }
-      @command_out.read if filled?
+      res = ''
+      res << "#<Shr::Shell>"
+      res << "<:command => #{command_line}>" if command_line.size > 0
+      res << "\n" if filled?
+      res << @command_out.read if filled?
+      res
     end
 
     def capture(&block)
