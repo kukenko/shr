@@ -10,8 +10,6 @@ module Shr
 
     it 'has the following methods' do
       m = sh.methods
-      m.should include(:capture)
-      m.should include(:release)
       m.should include(:exitstatus)
       m.should include(:each)
       m.should include(:redirect_from)
@@ -42,14 +40,6 @@ module Shr
           File.should exist(@tmpfile)
           FileUtils.rm @tmpfile
         end
-      end
-
-      describe '#capture' do
-        it 'captures output of commands'
-      end
-
-      describe '#release' do
-        it 'releases output of commands'
       end
 
       describe '#each' do
@@ -94,7 +84,7 @@ module Shr
         it 'redirecs result of command to file' do
           tempfile = Tempfile.new('temp')
           sh.pwd.redirect_to(tempfile.path)
-          File.read(tempfile.path).should eq(`pwd`)
+          sh.cat(tempfile.path).to_s.should eq(`pwd`)
           tempfile.close!
         end
       end

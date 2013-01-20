@@ -1,5 +1,4 @@
 #coding: utf-8
-require 'open3'
 require 'shr/command'
 
 module Shr
@@ -7,8 +6,6 @@ module Shr
 
     def initialize
       @promise = []
-      @capture = false
-      @release = false
     end
 
     def method_missing(name, *args)
@@ -17,48 +14,35 @@ module Shr
         super
       else
         delay command
-        release { force } if command.release? || @release
+        force! if command.release?
         self
       end
     end
 
     def to_s
-      capture { force }
+      force
       @command_out.read if filled?
     end
 
     def inspect
       command_line = @promise.join(' | ').strip
-      capture { force }
-      res = ''
-      res << "#<Shr::Shell>"
+      force
+      res =  "#<Shr::Shell>"
       res << "<:command => #{command_line}>" if command_line.size > 0
       res << "\n" if filled?
       res << @command_out.read if filled?
       res
     end
 
-    def capture(&block)
-      @capture = true
-      instance_exec(&block)
-      @capture = false
-    end
-
-    def release(&block)
-      @release = true
-      instance_exec(&block)
-      @release = false
-    end
-
     def each
-      capture { force }
+      force
       if filled?
         block_given? ? @command_out.each { |ln| yield ln } : @command_out.each
       end
     end
 
     def exitstatus
-      capture { force }
+      force
       if @wait_thread
         proc = @wait_thread.value
         proc.exitstatus
@@ -66,12 +50,12 @@ module Shr
     end
 
     def redirect_from(src)
-      capture { force(:redirect => { :in => src }) }
+      force(:in => src)
       self
     end
 
     def redirect_to(dest)
-      release { force(:redirect => { :out => dest }) }
+      force(:out => dest)
     end
 
     alias_method :<, :redirect_from
@@ -84,21 +68,33 @@ module Shr
     end
 
     def delay(command)
-      @promise << command.to_s
+      @promise << command
     end
 
+    # xxx
     def force(args={})
-      args = { :redirect => {} }.merge(args)
       return if @promise.empty?
 
-      if @release
-        Open3.pipeline(*@promise, args[:redirect])
-      elsif @capture
-        out, thr = Open3.pipeline_r(*@promise, args[:redirect])
-        @command_out = out
-        @wait_thread = thr[-1]
+      @promise.each do |promise|
+        io_r, io_w = IO.pipe
+        environment = { :out => io_w }
+        environment[:in] = @command_out if @command_out
+        environment.merge!(args)
+
+        watcher = promise.run(environment)
+
+        @command_out = io_r
+        @wait_thread = watcher
       end
 
+      @promise.clear
+    end
+
+    # xxx
+    def force!
+      return if @promise.empty?
+
+      @promise[-1].run!
       @promise.clear
     end
   end

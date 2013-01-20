@@ -11,6 +11,7 @@ module Shr
       m.should include(:to_s)
       m.should include(:exist?)
       m.should include(:release?)
+      m.should include(:run)
     end
 
     describe '#command' do

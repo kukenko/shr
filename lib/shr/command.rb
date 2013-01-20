@@ -1,4 +1,5 @@
 #command utf-8
+require 'open3'
 require 'shr/option'
 require 'shr/which'
 
@@ -27,6 +28,19 @@ module Shr
 
     def release?
       @command.end_with? '!'
+    end
+
+    # xxx
+    def run(environment)
+      pid = spawn(self.to_s, environment)
+      watcher = Process.detach(pid)
+      environment[:out].close if environment[:out].kind_of?(IO)
+      watcher
+    end
+
+    # xxx
+    def run!
+      Open3.pipeline(self.to_s)
     end
   end
 end
