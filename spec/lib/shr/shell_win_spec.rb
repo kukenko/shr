@@ -67,7 +67,7 @@ module Shr
         it 'redirecs result of command to file' do
           tempfile = Tempfile.new('temp')
           sh.chdir.redirect_to(tempfile.path)
-          File.read(tempfile.path).should eq(`chdir`)
+          sh.type(tempfile.path.gsub('/', '\\')).to_s.should eq(`chdir`)
           tempfile.close!
         end
       end
