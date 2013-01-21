@@ -71,26 +71,16 @@ module Shr
       @promise << command
     end
 
-    # xxx
     def force(args={})
       return if @promise.empty?
 
       @promise.each do |promise|
-        io_r, io_w = IO.pipe
-        environment = { :out => io_w }
-        environment[:in] = @command_out if @command_out
-        environment.merge!(args)
-
-        watcher = promise.run(environment)
-
-        @command_out = io_r
-        @wait_thread = watcher
+        @command_out, @wait_thread = promise.run(args, @command_out)
       end
 
       @promise.clear
     end
 
-    # xxx
     def force!
       return if @promise.empty?
 

@@ -28,7 +28,8 @@ module Shr
 
     describe '#to_s' do
       it 'returns the command and parsed options' do
-        cmd.to_s.should eq('ls -l -t -r')
+        cmd.to_s.should eq('ls -l -t -r') unless OS.windows?
+        cmd.to_s.should eq('ls /l /t /r') if OS.windows?
       end
     end
 

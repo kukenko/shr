@@ -31,11 +31,17 @@ module Shr
     end
 
     # xxx
-    def run(environment)
-      pid = spawn(self.to_s, environment)
+    def run(environment, command_out)
+      io_r, io_w = IO.pipe
+      options = { :out => io_w }
+      options[:in] = command_out if command_out
+      options.merge!(environment)
+
+      pid = spawn(self.to_s, options)
       watcher = Process.detach(pid)
-      environment[:out].close if environment[:out].kind_of?(IO)
-      watcher
+      io_w.close
+
+      [io_r, watcher]
     end
 
     # xxx
