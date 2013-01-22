@@ -5,7 +5,7 @@ module Shr
   class Shell
 
     def initialize
-      @promise = []
+      @commands = []
     end
 
     def method_missing(name, *args)
@@ -25,7 +25,7 @@ module Shr
     end
 
     def inspect
-      command_line = @promise.join(' | ').strip
+      command_line = @commands.join(' | ').strip
       force
       res =  "#<Shr::Shell>"
       res << "<:command => #{command_line}>" if command_line.size > 0
@@ -68,24 +68,24 @@ module Shr
     end
 
     def delay(command)
-      @promise << command
+      @commands << command
     end
 
     def force(args={})
-      return if @promise.empty?
+      return if @commands.empty?
 
-      @promise.each do |promise|
-        @command_out, @wait_thread = promise.run(args, @command_out)
+      @commands.each do |command|
+        @command_out, @wait_thread = command.run(args, @command_out)
       end
-
-      @promise.clear
+      @wait_thread.join
+      @commands.clear
     end
 
     def force!
-      return if @promise.empty?
+      return if @commands.empty?
 
-      @promise[-1].run!
-      @promise.clear
+      @commands[-1].run!
+      @commands.clear
     end
   end
 end

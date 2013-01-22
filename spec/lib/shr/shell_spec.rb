@@ -84,7 +84,7 @@ module Shr
         it 'redirecs result of command to file' do
           tempfile = Tempfile.new('temp')
           sh.pwd.redirect_to(tempfile.path)
-          sh.cat(tempfile.path).to_s.should eq(`pwd`)
+          sh.cat.redirect_from(tempfile.path).to_s.should eq(`pwd`)
           tempfile.close!
         end
       end
