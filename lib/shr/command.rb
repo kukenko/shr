@@ -30,23 +30,24 @@ module Shr
       @command.end_with? '!'
     end
 
-    # xxx
-    def run(environment, command_out)
-      io_r, io_w = IO.pipe
-      options = { :out => io_w }
-      options[:in] = command_out if command_out
-      options.merge!(environment)
+    def to_proc
+      Proc.new do |environment, command_out|
+        if release?
+          Open3.pipeline(self.to_s)
+          [nil, nil]
+        else
+          io_r, io_w = IO.pipe
+          options = { :out => io_w }
+          options[:in] = command_out if command_out
+          options.merge!(environment)
 
-      pid = spawn(self.to_s, options)
-      watcher = Process.detach(pid)
-      io_w.close
+          pid = spawn(self.to_s, options)
+          watcher = Process.detach(pid)
+          io_w.close
 
-      [io_r, watcher]
-    end
-
-    # xxx
-    def run!
-      Open3.pipeline(self.to_s)
+          [io_r, watcher]
+        end
+      end
     end
   end
 end

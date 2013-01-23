@@ -14,7 +14,7 @@ module Shr
         super
       else
         delay command
-        force! if command.release?
+        force if command.release?
         self
       end
     end
@@ -25,7 +25,7 @@ module Shr
     end
 
     def inspect
-      command_line = @commands.join(' | ').strip
+      command_line = @commands.map {|c| c.first }.join(' | ').strip
       force
       res =  "#<Shr::Shell>"
       res << "<:command => #{command_line}>" if command_line.size > 0
@@ -68,23 +68,16 @@ module Shr
     end
 
     def delay(command)
-      @commands << command
+      @commands << [command, command.to_proc]
     end
 
     def force(args={})
       return if @commands.empty?
 
-      @commands.each do |command|
-        @command_out, @wait_thread = command.run(args, @command_out)
+      @commands.each do |_, command|
+        @command_out, @wait_thread = command.call(args, @command_out)
       end
-      @wait_thread.join
-      @commands.clear
-    end
-
-    def force!
-      return if @commands.empty?
-
-      @commands[-1].run!
+      @wait_thread.join if @wait_thread
       @commands.clear
     end
   end
