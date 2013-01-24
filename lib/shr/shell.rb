@@ -1,5 +1,6 @@
 #coding: utf-8
 require 'shr/command'
+require 'shr/builtin'
 
 module Shr
   class Shell
