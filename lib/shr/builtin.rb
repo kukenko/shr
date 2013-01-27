@@ -1,4 +1,5 @@
 #coding: utf-8
+require 'stringio'
 
 module Shr
   module Builtin
