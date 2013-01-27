@@ -5,6 +5,8 @@ require 'shr/builtin'
 module Shr
   class Shell
 
+    include Builtin
+
     def initialize
       @commands = []
     end
