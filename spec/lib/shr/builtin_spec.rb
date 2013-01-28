@@ -18,8 +18,8 @@ module Shr
 
       it 'redirects output from block to file' do
         tempfile = Tempfile.new('temp')
-        sh.capture { print 'hello capture'}.redirect_to(tempfile.path)
-        sh.cat.redirect_from(tempfile.path).to_s.should eq('hello capture')
+        sh.capture { print 'hello capture' }.redirect_to(tempfile.path)
+        File.read(tempfile.path).should eq('hello capture')
         tempfile.close!
       end
     end
