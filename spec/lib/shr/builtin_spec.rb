@@ -6,9 +6,14 @@ module Shr
   describe Builtin do
     let(:sh) { Shell.new }
 
+    before(:all) do
+      @original = Dir.pwd
+    end
+
     it 'has the following methods' do
       m = sh.methods
       m.should include(:capture)
+      m.should include(:cd!)
     end
 
     describe '#capture' do
@@ -24,8 +29,23 @@ module Shr
       end
     end
 
-    describe '#cd' do
-      it 'changes the current working directory'
+    describe '#cd!' do
+      it 'changes the current working directory' do
+        sh.cd! Dir.home
+        Dir.pwd.should eq(Dir.home)
+        Dir.chdir @original
+      end
+
+      context 'with no argument' do
+        it 'changes the current working directory to users home' do
+          sh.cd!
+          Dir.pwd.should eq(Dir.home)
+        end
+      end
+    end
+
+    after(:all) do
+      Dir.chdir @original
     end
   end
 end

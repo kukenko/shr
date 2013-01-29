@@ -16,6 +16,16 @@ module Shr
       self
     end
 
+    def cd!(path=nil)
+      proc = Proc.new do
+        path ? Dir.chdir(path) : Dir.chdir
+        [nil, nil]
+      end
+      @commands << ["#cd! #{path}".strip, proc]
+      force
+      self
+    end
+
     private
 
     def capture_stdout
