@@ -72,6 +72,19 @@ module Shr
         end
       end
 
+      describe '#bake' do
+        it 'bakes new command' do
+          sh.bake(:dir_B,  :dir,  [:B])
+          sh.bake(:sort_R, :sort, [:R])
+
+          files = []
+          sh.dir_B(@tmpdir.gsub('/', '\\')).sort_R.each do |file|
+            files << file.strip
+          end
+          files.should eq(['ruby.rb', 'python.py', 'perl.pl'])
+        end
+      end
+
       after(:all) do
         FileUtils.remove_entry_secure @tmpdir
       end

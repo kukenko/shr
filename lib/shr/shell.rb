@@ -64,6 +64,14 @@ module Shr
     alias_method :<, :redirect_from
     alias_method :>, :redirect_to
 
+    def bake(name, command, options=[])
+      Shell.class_eval do
+        define_method(name) do |*args|
+          self.method_missing(command, *(options + args))
+        end
+      end
+    end
+
     private
 
     def filled?

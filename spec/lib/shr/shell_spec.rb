@@ -16,6 +16,7 @@ module Shr
       m.should include(:<)
       m.should include(:redirect_to)
       m.should include(:>)
+      m.should include(:bake)
     end
 
     unless OS.windows?
@@ -86,6 +87,18 @@ module Shr
           sh.pwd.redirect_to(tempfile.path)
           sh.cat.redirect_from(tempfile.path).to_s.should eq(`pwd`)
           tempfile.close!
+        end
+      end
+
+      describe '#bake' do
+        it 'bakes new command' do
+          sh.bake(:sort_r, :sort, [:r])
+
+          files = []
+          sh.ls(@tmpdir).sort_r.each do |file|
+            files << file.strip
+          end
+          files.should eq(['ruby.rb', 'python.py', 'perl.pl'])
         end
       end
 
