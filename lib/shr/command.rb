@@ -1,5 +1,4 @@
 #command utf-8
-require 'open3'
 require 'shr/option'
 require 'shr/which'
 
@@ -33,7 +32,7 @@ module Shr
     def to_proc
       Proc.new do |environment, command_out|
         if release?
-          Open3.pipeline(self.to_s)
+          Process.detach(spawn self.to_s).join
           [nil, nil]
         else
           io_r, io_w = IO.pipe
