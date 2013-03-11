@@ -22,7 +22,7 @@ module Shr
         [nil, nil]
       end
       @commands << ["#cd! #{path}".strip, proc]
-      force
+      carry_out
       self
     end
 

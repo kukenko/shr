@@ -16,36 +16,35 @@ module Shr
       unless command.exist?
         super
       else
-        delay command
-        force if command.release?
+        plan_to command
+        carry_out if command.release?
         self
       end
     end
 
     def to_s
-      force
-      @command_out.read if filled?
+      carry_out
+      @command_out.read if carried_out?
     end
 
     def inspect
       command_line = @commands.map {|c| c.first }.join(' | ').strip
-      force
+      carry_out
       res =  "#<Shr::Shell>"
       res << "<:command => #{command_line}>" if command_line.size > 0
-      res << "\n" if filled?
-      res << @command_out.read if filled?
+      res << "\n" << @command_out.read if carried_out?
       res
     end
 
     def each
-      force
-      if filled?
+      carry_out
+      if carried_out?
         block_given? ? @command_out.each { |ln| yield ln } : @command_out.each
       end
     end
 
     def exitstatus
-      force
+      carry_out
       if @wait_thread
         proc = @wait_thread.value
         proc.exitstatus
@@ -53,12 +52,12 @@ module Shr
     end
 
     def redirect_from(src)
-      force(:in => src)
+      carry_out(:in => src)
       self
     end
 
     def redirect_to(dest)
-      force(:out => dest)
+      carry_out(:out => dest)
     end
 
     alias_method :<, :redirect_from
@@ -74,15 +73,15 @@ module Shr
 
     private
 
-    def filled?
+    def carried_out?
       @command_out && !@command_out.closed?
     end
 
-    def delay(command)
+    def plan_to(command)
       @commands << [command, command.to_proc]
     end
 
-    def force(args={})
+    def carry_out(args={})
       return if @commands.empty?
 
       @commands.each do |_, command|
