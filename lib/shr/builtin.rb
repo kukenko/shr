@@ -12,7 +12,7 @@ module Shr
         end
         [output, nil]
       end
-      @commands << [:capture, proc]
+      @plan << [:capture, proc]
       self
     end
 
@@ -21,7 +21,7 @@ module Shr
         path ? Dir.chdir(path) : Dir.chdir
         [nil, nil]
       end
-      @commands << ["#cd! #{path}".strip, proc]
+      @plan << ["#cd! #{path}".strip, proc]
       carry_out
       self
     end

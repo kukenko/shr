@@ -8,7 +8,7 @@ module Shr
     include Builtin
 
     def initialize
-      @commands = []
+      @plan = []
     end
 
     def method_missing(name, *args)
@@ -28,7 +28,7 @@ module Shr
     end
 
     def inspect
-      command_line = @commands.map {|c| c.first }.join(' | ').strip
+      command_line = @plan.map {|c| c.first }.join(' | ').strip
       carry_out
       res =  "#<Shr::Shell>"
       res << "<:command => #{command_line}>" if command_line.size > 0
@@ -78,17 +78,17 @@ module Shr
     end
 
     def plan_to(command)
-      @commands << [command, command.to_proc]
+      @plan << [command, command.to_proc]
     end
 
     def carry_out(args={})
-      return if @commands.empty?
+      return if @plan.empty?
 
-      @commands.each do |_, command|
+      @plan.each do |_, command|
         @command_out, @wait_thread = command.call(args, @command_out)
       end
       @wait_thread.join if @wait_thread
-      @commands.clear
+      @plan.clear
     end
   end
 end
