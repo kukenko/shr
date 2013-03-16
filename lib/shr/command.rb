@@ -1,4 +1,4 @@
-#command utf-8
+#coding: utf-8
 require 'shr/option'
 require 'shr/which'
 
@@ -9,12 +9,6 @@ module Shr
       @command = command.to_s
       Option.indicator = '/' if OS.windows?
       @options = Option.translate(options).join(' ')
-    end
-    attr_reader :command
-
-    def command
-      command = directly? ? @command.chomp('!') : @command
-      Which::builtins?(command) ? "cmd /c #{command}" : command
     end
 
     def to_s
@@ -36,17 +30,23 @@ module Shr
           [nil, nil]
         else
           io_r, io_w = IO.pipe
-          options = { :out => io_w }
-          options[:in] = command_out if command_out
-          options.merge!(environment)
+          fds = { :out => io_w }
+          fds[:in] = command_out if command_out
+          fds.merge! environment
 
-          pid = spawn(self.to_s, options)
-          watcher = Process.detach(pid)
+          watcher = Process.detach(spawn self.to_s, fds)
           io_w.close
 
           [io_r, watcher]
         end
       end
+    end
+
+    private
+
+    def command
+      c = @command.chomp('!')
+      Which::builtins?(c) ? "cmd /c #{c}" : c
     end
   end
 end

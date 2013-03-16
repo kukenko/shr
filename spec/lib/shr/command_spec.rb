@@ -7,23 +7,10 @@ module Shr
 
     it 'has the following methods' do
       m = cmd.methods
-      m.should include(:command)
       m.should include(:to_s)
       m.should include(:exist?)
       m.should include(:directly?)
       m.should include(:to_proc)
-    end
-
-    describe '#command' do
-      it 'returns the command name that passed in initializing' do
-        cmd.command.should eq('ls')
-      end
-
-      context "when passed command end with '!'" do
-        it "returns the command name without '!'" do
-          Command.new(:ls!).command.should eq('ls')
-        end
-      end
     end
 
     describe '#to_s' do
@@ -47,6 +34,18 @@ module Shr
 
       context "when passed command with '!'" do
         it { Command.new(:ls).directly?.should be_false }
+      end
+    end
+
+    describe '#command' do
+      it 'returns the command name that passed in initializing' do
+        cmd.send(:command).should eq('ls')
+      end
+
+      context "when passed command end with '!'" do
+        it "returns the command name without '!'" do
+          Command.new(:ls!).send(:command).should eq('ls')
+        end
       end
     end
   end
