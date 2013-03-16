@@ -10,7 +10,7 @@ module Shr
       m.should include(:command)
       m.should include(:to_s)
       m.should include(:exist?)
-      m.should include(:release?)
+      m.should include(:directly?)
       m.should include(:to_proc)
     end
 
@@ -40,13 +40,13 @@ module Shr
       end
     end
 
-    describe '#release?' do
+    describe '#directly?' do
       context "when passed command without '!'" do
-        it { Command.new(:ls!).release?.should be_true }
+        it { Command.new(:ls!).directly?.should be_true }
       end
 
       context "when passed command with '!'" do
-        it { Command.new(:ls).release?.should be_false }
+        it { Command.new(:ls).directly?.should be_false }
       end
     end
   end

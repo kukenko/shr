@@ -17,7 +17,7 @@ module Shr
         super
       else
         plan_to command
-        carry_out if command.release?
+        carry_out if command.directly?
         self
       end
     end

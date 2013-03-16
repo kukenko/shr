@@ -13,7 +13,7 @@ module Shr
     attr_reader :command
 
     def command
-      command = release? ? @command.chomp('!') : @command
+      command = directly? ? @command.chomp('!') : @command
       Which::builtins?(command) ? "cmd /c #{command}" : command
     end
 
@@ -25,13 +25,13 @@ module Shr
       Which::exist? @command.chomp('!')
     end
 
-    def release?
+    def directly?
       @command.end_with? '!'
     end
 
     def to_proc
       Proc.new do |environment, command_out|
-        if release?
+        if directly?
           Process.detach(spawn self.to_s).join
           [nil, nil]
         else
