@@ -12,6 +12,7 @@ module Shr
       @@path += cwd
     end
 
+    @@builtins = {}
     if OS.windows?
       @@builtins = %w{
         assoc
@@ -49,21 +50,22 @@ module Shr
 
     class << self
       def exist?(program)
-        programs = add_extensions(program)
-
-        entries = paths.product(programs).map { |list| list.join '/' }
-        result = entries.find do |exe|
-          File.executable?(exe) && !File.directory?(exe)
+        if shell_builtin? program.to_s
+          true
+        else
+          programs = add_extensions(program)
+          entries = paths.product(programs).map { |list| list.join '/' }
+          result = entries.find do |exe|
+            File.executable?(exe) && !File.directory?(exe)
+          end
+          !!result
         end
-
-        result = program.to_s if builtins?(program.to_s)
-        result
       end
 
       alias :exists? :exist?
 
-      def builtins?(program)
-        @@builtins.include? program.to_s if OS.windows?
+      def shell_builtin?(program)
+        @@builtins.include? program.to_s
       end
 
       def add_extensions(program)

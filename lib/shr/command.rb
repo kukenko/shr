@@ -46,7 +46,7 @@ module Shr
 
     def command
       c = @command.chomp('!')
-      Which::builtins?(c) ? "cmd /c #{c}" : c
+      Which::shell_builtin?(c) ? "cmd /c #{c}" : c
     end
   end
 end
